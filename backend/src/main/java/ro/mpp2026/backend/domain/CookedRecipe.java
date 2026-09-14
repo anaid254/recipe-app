@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ro.mpp2026.backend.domain.enums.RecipeStatus;
 
 import java.time.LocalDateTime;
 

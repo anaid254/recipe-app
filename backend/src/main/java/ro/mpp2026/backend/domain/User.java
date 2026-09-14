@@ -3,10 +3,9 @@ package ro.mpp2026.backend.domain;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import ro.mpp2026.backend.domain.enums.Role;
+
 
 @Entity
 @Table(name = "users")
@@ -14,6 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User implements IEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +30,8 @@ public class User implements IEntity<Long> {
 
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 }
