@@ -3,10 +3,7 @@ package ro.mpp2026.backend.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ro.mpp2026.backend.dto.AuthResponse;
 import ro.mpp2026.backend.dto.LoginRequest;
 import ro.mpp2026.backend.dto.RegisterRequest;
@@ -15,6 +12,7 @@ import ro.mpp2026.backend.service.AuthService;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
     private final AuthService authService;

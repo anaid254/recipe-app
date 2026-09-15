@@ -24,8 +24,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException e) {
         Map<String, String> map = new HashMap<>();
-        map.put("error", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        map.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
