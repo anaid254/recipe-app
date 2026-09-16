@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { FaCheck, FaTimes, FaInfoCircle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import './Register.css';
 import axios from '../../api/axios.js';
+import {Link} from "react-router-dom";
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{2,19}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{6,24}$/;
@@ -119,7 +120,10 @@ const Register = () => {
                 </section>
             ) : (
         <section>
-            <h1>Register</h1>
+            <div className="auth-logo-container">
+                <img src="/logo.png" alt="Yummish" className="auth-logo" />
+            </div>
+            <h1>Sign Up</h1>
             <p ref={errRef} className={globalError ? "errmsg" : "offscreen"} aria-live="assertive">
                 {globalError}
             </p>
@@ -281,7 +285,7 @@ const Register = () => {
             <p className="signin-prompt">
                 Already registered?<br />
                 <span className="line">
-                    <a href="#">Sign In</a>
+                    <Link to="/login">Sign In</Link>
                 </span>
             </p>
         </section>

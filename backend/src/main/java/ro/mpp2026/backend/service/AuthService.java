@@ -49,6 +49,7 @@ public class AuthService {
         return  AuthResponse.builder()
                 .token(token)
                 .username(user.getUsername())
+                .role(user.getRole())
                 .build();
     }
 
@@ -66,6 +67,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .token(token)
                 .username(userDetails.getUsername())
+                .role(((User) userDetails).getRole())
                 .build();
     }
 }

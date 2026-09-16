@@ -29,9 +29,11 @@ section {
 h1 {
     margin-top: 0;
     margin-bottom: 1.5rem;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #e76f51;
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 2.1rem;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    color: #6b3e1a;
     text-align: center;
 }
 
@@ -72,10 +74,10 @@ input[type="password"] {
 }
 
 input:focus {
-    border-color: #e76f51;
+    border-color: #8c5322;
     color: #000000;
     background-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(231, 111, 81, 0.15);
+    box-shadow: 0 0 0 3px rgba(140, 83, 34, 0.15);
 }
 
 .input-container {
@@ -133,7 +135,7 @@ form > button {
     width: 100%;
     border: none;
     border-radius: 10px;
-    background: #e76f51;
+    background-color: #8c5322;
     color: #ffffff;
     font-size: 1rem;
     font-weight: 600;
@@ -143,7 +145,7 @@ form > button {
 
 button[type="submit"]:hover:not(:disabled),
 form > button:hover:not(:disabled) {
-    background: #d65a3c;
+    background-color: #734219;
 }
 
 button[type="submit"]:active:not(:disabled),
@@ -151,10 +153,15 @@ form > button:active:not(:disabled) {
     transform: translateY(1px);
 }
 
+
 button[type="submit"]:disabled,
 form > button:disabled {
-    background: #cbd5e1;
+    background-color: #d1b8a5 !important;
+    color: #ffffff !important;
     cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+    transform: none;
 }
 
 .signin-prompt {
@@ -170,7 +177,7 @@ form > button:disabled {
 }
 
 .signin-prompt .line a {
-    color: #e76f51;
+    color: #8c5322;
     font-weight: 600;
     text-decoration: none;
     transition: color 0.15s ease, text-decoration 0.15s ease;
@@ -263,4 +270,28 @@ form > button:disabled {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.auth-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.auth-logo {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #2b2118 !important;
+    transition: background-color 5000s ease-in-out 0s;
 }
