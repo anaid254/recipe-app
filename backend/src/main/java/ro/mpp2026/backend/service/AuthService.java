@@ -3,6 +3,7 @@ package ro.mpp2026.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -61,13 +62,16 @@ public class AuthService {
                 )
         );
 
-        var userDetails = authUserService.loadUserByUsername(loginRequest.getUsername());
+        User user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        UserDetails userDetails = authUserService.loadUserByUsername(user.getUsername());
         String token = jwtService.generateToken(userDetails);
 
         return AuthResponse.builder()
                 .token(token)
                 .username(userDetails.getUsername())
-                .role(((User) userDetails).getRole())
+                .role(user.getRole())
                 .build();
     }
 }

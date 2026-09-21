@@ -1,17 +1,17 @@
 package ro.mpp2026.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name = "recipe_ingredients")
+@Table(name = "recipe_ingredients", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"recipe_id", "ingredient_id"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RecipeIngredient implements IEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
