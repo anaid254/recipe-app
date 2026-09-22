@@ -181,7 +181,7 @@ public class RecipeService {
                 .map(this::mapToResponse)
                 .toList();
     }
-    private RecipeResponse mapToResponse(Recipe recipe) {
+    public RecipeResponse mapToResponse(Recipe recipe) {
         List<RecipeIngredientResponse> ingredientResponses = recipe.getRecipeIngredients() != null
                 ? recipe.getRecipeIngredients().stream()
                 .map(ri -> RecipeIngredientResponse.builder()

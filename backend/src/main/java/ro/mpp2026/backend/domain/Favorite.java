@@ -8,7 +8,12 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "favorites")
+@Table(
+        name = "favorites",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "recipe_id"})
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,6 +33,7 @@ public class Favorite implements IEntity<Long>{
 
     @Column(name = "added_at", nullable = false)
     private LocalDateTime addedAt;
+
 
     @PrePersist
     public void prePersist(){
