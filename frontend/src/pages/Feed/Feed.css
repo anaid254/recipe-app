@@ -1,0 +1,51 @@
+.feed-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #fdfbf7;
+    margin: 0;
+    padding: 0;
+}
+
+.feed-container {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 2rem 2.5rem 5rem 2rem;
+    box-sizing: border-box;
+}
+
+.feed-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.feed-header h1 {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 2.5rem;
+    color: #6b3e1a;
+    margin: 0;
+}
+
+.feed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2.2rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+    .feed-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .feed-container {
+        padding: 1rem;
+    }
+    .feed-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}

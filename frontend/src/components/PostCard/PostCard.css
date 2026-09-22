@@ -1,0 +1,78 @@
+.recipe-card {
+    width: 100%;
+    max-width: 440px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #f1ece1;
+    overflow: hidden;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.75rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-sizing: border-box;
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 30px -5px rgba(107, 62, 26, 0.1), 0 10px 12px -5px rgba(0, 0, 0, 0.04);
+}
+
+.recipe-image {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid #f1ece1;
+}
+
+.recipe-body {
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.recipe-author {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 0.4rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.recipe-author strong {
+    color: #8c5322;
+    font-weight: 600;
+}
+
+.recipe-title {
+    margin: 0.3rem 0 0.6rem 0;
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 1.65rem;
+    font-weight: 400;
+    color: #6b3e1a;
+    line-height: 1.25;
+}
+
+.recipe-description {
+    font-family: 'Poppins', sans-serif;
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 1.25rem 0;
+}
+
+.recipe-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid #f8f6f0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.recipe-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
