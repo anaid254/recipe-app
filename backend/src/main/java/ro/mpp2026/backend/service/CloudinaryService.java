@@ -1,7 +1,7 @@
 package ro.mpp2026.backend.service;
 
 import com.cloudinary.Cloudinary;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
