@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ro.mpp2026.backend.domain.enums.RecipeType;
 import ro.mpp2026.backend.dto.CloudinaryResponse;
 import ro.mpp2026.backend.dto.RecipeRequest;
 import ro.mpp2026.backend.dto.RecipeResponse;
@@ -27,6 +28,11 @@ public class RecipeController {
     @GetMapping
     public ResponseEntity<List<RecipeResponse>> getAllRecipes() {
         return ResponseEntity.ok(recipeService.getAllRecipes());
+    }
+
+    @GetMapping("/type")
+    public ResponseEntity<List<RecipeResponse>> getRecipeByType(@RequestParam RecipeType recipeType) {
+        return ResponseEntity.ok(recipeService.searchRecipesByType(recipeType));
     }
 
     @GetMapping("/{id}")

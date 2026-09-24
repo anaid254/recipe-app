@@ -34,16 +34,9 @@ public class ReviewController {
         return ResponseEntity.ok(reviewResponse);
     }
 
-    @DeleteMapping("/recipe/{recipeId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long recipeId, @AuthenticationPrincipal UserDetails user) {
-        reviewService.deleteReview(recipeId, user.getUsername());
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{reviewId}/admin")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Void> deleteReviewAdmin(@PathVariable Long reviewId) {
-        reviewService.deleteReviewByAdmin(reviewId);
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId, @AuthenticationPrincipal UserDetails user) {
+        reviewService.deleteReview(reviewId, user.getUsername());
         return ResponseEntity.noContent().build();
     }
 

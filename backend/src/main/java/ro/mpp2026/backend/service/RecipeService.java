@@ -10,6 +10,8 @@ import ro.mpp2026.backend.domain.Ingredient;
 import ro.mpp2026.backend.domain.Recipe;
 import ro.mpp2026.backend.domain.RecipeIngredient;
 import ro.mpp2026.backend.domain.User;
+import ro.mpp2026.backend.domain.enums.AuditAction;
+import ro.mpp2026.backend.domain.enums.RecipeType;
 import ro.mpp2026.backend.domain.enums.Role;
 import ro.mpp2026.backend.dto.*;
 import ro.mpp2026.backend.repository.IngredientRepository;
@@ -18,7 +20,6 @@ import ro.mpp2026.backend.repository.UserRepository;
 import ro.mpp2026.backend.util.FileUploadUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -28,6 +29,7 @@ public class RecipeService {
     private final IngredientRepository ingredientRepository;
     private final UserRepository userRepository;
     private final CloudinaryService cloudinaryService;
+    private final AuditService auditService;
 
     @Transactional
     public RecipeResponse createRecipe(RecipeRequest recipeRequest, String currentUsername) {
@@ -39,8 +41,10 @@ public class RecipeService {
                 .description(recipeRequest.getDescription())
                 .prepTimeMinutes(recipeRequest.getPrepTimeMinutes())
                 .cookingTimeMinutes(recipeRequest.getCookTimeMinutes())
+                .steps(recipeRequest.getSteps())
                 .servings(recipeRequest.getServings())
                 .imageUrl(recipeRequest.getImageUrl())
+                .recipeType(recipeRequest.getRecipeType())
                 .user(user)
                 .build();
         if(recipeRequest.getIngredients() != null) {
@@ -73,8 +77,8 @@ public class RecipeService {
         final User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username " + currentUsername));
 
-        if (!recipe.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
-            throw new AccessDeniedException("You are not authorized to update the image for this recipe");
+        if (!recipe.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Only the author can update the image for this recipe");
         }
 
         FileUploadUtil.assertAllowed(file, FileUploadUtil.IMAGE_PATTERN);
@@ -98,8 +102,8 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findByIdWithIngredients(recipeId)
                 .orElseThrow(() -> new IllegalArgumentException("Recipe not found with id " + recipeId));
 
-        if (!recipe.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
-            throw new AccessDeniedException("You are not authorized to update this recipe");
+        if (!recipe.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Only the author can update this recipe");
         }
 
         recipe.setTitle(recipeRequest.getTitle());
@@ -108,6 +112,8 @@ public class RecipeService {
         recipe.setCookingTimeMinutes(recipeRequest.getCookTimeMinutes());
         recipe.setServings(recipeRequest.getServings());
         recipe.setImageUrl(recipeRequest.getImageUrl());
+        recipe.setSteps(recipeRequest.getSteps());
+        recipe.setRecipeType(recipeRequest.getRecipeType());
 
         if (recipeRequest.getIngredients() != null) {
             new ArrayList<>(recipe.getRecipeIngredients()).forEach(recipe::removeRecipeIngredient);
@@ -148,6 +154,16 @@ public class RecipeService {
         if (!isAuthor && !isAdmin) {
             throw new AccessDeniedException("You are not authorized to delete this recipe");
         }
+
+        if (isAdmin && !isAuthor) {
+            auditService.logAction(
+                    currentUsername,
+                    AuditAction.DELETE_RECIPE,
+                    "RECIPE",
+                    recipeId,
+                    "Admin deleted recipe '" + recipe.getTitle() + "' created by user '" + recipe.getUser().getUsername() + "'"
+            );
+        }
         recipeRepository.delete(recipe);
     }
 
@@ -181,6 +197,15 @@ public class RecipeService {
                 .map(this::mapToResponse)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<RecipeResponse> searchRecipesByType(RecipeType recipeType) {
+        return recipeRepository.findAllByRecipeType(recipeType)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
     public RecipeResponse mapToResponse(Recipe recipe) {
         List<RecipeIngredientResponse> ingredientResponses = recipe.getRecipeIngredients() != null
                 ? recipe.getRecipeIngredients().stream()
@@ -197,8 +222,10 @@ public class RecipeService {
                 .id(recipe.getId())
                 .title(recipe.getTitle())
                 .description(recipe.getDescription())
+                .steps(recipe.getSteps())
                 .prepTimeMinutes(recipe.getPrepTimeMinutes())
                 .cookingTimeMinutes(recipe.getCookingTimeMinutes())
+                .recipeType(recipe.getRecipeType())
                 .servings(recipe.getServings())
                 .imageUrl(recipe.getImageUrl())
                 .createdAt(recipe.getCreatedAt())

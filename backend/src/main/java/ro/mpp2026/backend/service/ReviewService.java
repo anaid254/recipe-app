@@ -1,11 +1,14 @@
 package ro.mpp2026.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.mpp2026.backend.domain.Recipe;
 import ro.mpp2026.backend.domain.Review;
 import ro.mpp2026.backend.domain.User;
+import ro.mpp2026.backend.domain.enums.AuditAction;
+import ro.mpp2026.backend.domain.enums.Role;
 import ro.mpp2026.backend.dto.ReviewRequest;
 import ro.mpp2026.backend.dto.ReviewResponse;
 import ro.mpp2026.backend.repository.RecipeRepository;
@@ -21,7 +24,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final RecipeRepository recipeRepository;
     private final ReviewRepository reviewRepository;
-
+    private final AuditService auditService;
 
     @Transactional
     public ReviewResponse addReview(Long recipeId, ReviewRequest reviewRequest, String username) {
@@ -64,23 +67,30 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(Long recipeId, String username) {
-        if (!recipeRepository.existsById(recipeId)) {
-            throw new IllegalArgumentException("Recipe not found with id " + recipeId);
-        }
+    public void deleteReview(Long reviewId, String username) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("Review not found with id " + reviewId));
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username " + username));
 
-        Review review = reviewRepository.findByRecipeIdAndUserId(recipeId, user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
-        reviewRepository.delete(review);
-    }
+        boolean isAuthor = review.getUser().getId().equals(user.getId());
+        boolean isAdmin = user.getRole() == Role.ADMIN;
 
-    @Transactional
-    public void deleteReviewByAdmin(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
+        if (!isAuthor && !isAdmin) {
+            throw new AccessDeniedException("You are not authorized to delete this review");
+        }
+
+        if (isAdmin && !isAuthor) {
+            auditService.logAction(
+                    username,
+                    AuditAction.DELETE_REVIEW,
+                    "REVIEW",
+                    reviewId,
+                    "Admin deleted review by user '" + review.getUser().getUsername()
+                            + "' on recipe id " + review.getRecipe().getId()
+            );
+        }
         reviewRepository.delete(review);
     }
 

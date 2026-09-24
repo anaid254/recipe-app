@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ro.mpp2026.backend.domain.Recipe;
-import ro.mpp2026.backend.domain.User;
+import ro.mpp2026.backend.domain.enums.RecipeType;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +19,8 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
 
     @Query("SELECT DISTINCT r FROM Recipe r LEFT JOIN FETCH r.recipeIngredients ri LEFT JOIN FETCH ri.ingredient")
     List<Recipe> findAllWithIngredients();
+
+    long countByUserId(Long userId);
+
+    List<Recipe> findAllByRecipeType(RecipeType recipeType);
 }

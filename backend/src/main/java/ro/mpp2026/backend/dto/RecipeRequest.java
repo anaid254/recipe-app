@@ -3,9 +3,11 @@ package ro.mpp2026.backend.dto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import ro.mpp2026.backend.domain.Ingredient;
+import ro.mpp2026.backend.domain.enums.RecipeType;
 
 import java.util.List;
 
@@ -22,6 +24,9 @@ public class RecipeRequest {
     @NotBlank(message = "Recipe description is required")
     private String description;
 
+    @NotBlank(message = "Recipe steps are required")
+    private String steps;
+
     @Positive(message = "Prep time must be a positive number")
     private Integer prepTimeMinutes;
 
@@ -30,6 +35,9 @@ public class RecipeRequest {
 
     @Positive(message = "Servings must be a positive number")
     private Integer servings;
+
+    @NotNull(message = "Recipe type is required")
+    private RecipeType recipeType;
 
     private String imageUrl;
 

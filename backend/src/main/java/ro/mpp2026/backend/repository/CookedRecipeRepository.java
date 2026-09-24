@@ -12,4 +12,5 @@ public interface CookedRecipeRepository extends JpaRepository<CookedRecipe,Long>
     List<CookedRecipe> findByUserIdAndStatus(Long userId, RecipeStatus status);
     Optional<CookedRecipe> findByIdAndUserId(Long id, Long userId);
     boolean existsByRecipeIdAndUserIdAndStatus(Long recipeId, Long userId, RecipeStatus status);
+    long countByUserIdAndStatus(Long userId, RecipeStatus status);
 }

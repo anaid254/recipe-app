@@ -2,6 +2,7 @@ package ro.mpp2026.backend.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ro.mpp2026.backend.domain.enums.RecipeType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,6 +26,9 @@ public class Recipe implements IEntity<Long> {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String steps;
+
     @Column(name = "prep_time_minutes")
     private Integer prepTimeMinutes;
 
@@ -38,6 +42,10 @@ public class Recipe implements IEntity<Long> {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private RecipeType recipeType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
