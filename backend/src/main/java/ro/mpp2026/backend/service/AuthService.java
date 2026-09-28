@@ -1,6 +1,7 @@
 package ro.mpp2026.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -65,6 +66,10 @@ public class AuthService {
         User user = userRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        if (!user.isEnabled()) {
+            throw new IllegalStateException("Account is deactivated");
+        }
+
         UserDetails userDetails = authUserService.loadUserByUsername(user.getUsername());
         String token = jwtService.generateToken(userDetails);
 
@@ -73,5 +78,23 @@ public class AuthService {
                 .username(userDetails.getUsername())
                 .role(user.getRole())
                 .build();
+    }
+
+    public ResponseCookie generateJwtCookie(String token) {
+        return ResponseCookie.from(JwtService.JWT_COOKIE_NAME, token)
+                .path("/")
+                .maxAge(24 * 60 * 60)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .build();
+    }
+
+    public ResponseCookie generateJwtCookie(UserDetails userDetails) {
+        return jwtService.generateJwtCookie(userDetails);
+    }
+
+    public ResponseCookie getCleanJwtCookie() {
+        return jwtService.getCleanJwtCookie();
     }
 }

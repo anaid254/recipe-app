@@ -3,6 +3,10 @@ package ro.mpp2026.backend.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +22,7 @@ public class JwtService {
 
     private static final String SECRET_KEY= "4cc957a948378021232fd430dfebf19f5486b79d58b1d765910332627699b7cd";
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
+    public static final String JWT_COOKIE_NAME = "jwt_token";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -68,5 +73,47 @@ public class JwtService {
     private SecretKey getSignInKey() {
         byte[] keyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public ResponseCookie generateJwtCookie(UserDetails userDetails) {
+        String jwt = generateToken(userDetails);
+        return ResponseCookie.from(JWT_COOKIE_NAME, jwt)
+                .path("/")
+                .maxAge(EXPIRATION_TIME / 1000)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .build();
+    }
+
+    public ResponseCookie getCleanJwtCookie(){
+        return ResponseCookie.from(JWT_COOKIE_NAME, "")
+                .path("/")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .build();
+    }
+
+    public String getJwtFromCookies(HttpServletRequest request) {
+        if(request.getCookies() != null){
+            for (Cookie cookie : request.getCookies()) {
+                if(JWT_COOKIE_NAME.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    public ResponseCookie generateJwtCookie(String jwt) {
+        return ResponseCookie.from(JWT_COOKIE_NAME, jwt)
+                .path("/")
+                .maxAge(EXPIRATION_TIME / 1000)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .build();
     }
 }

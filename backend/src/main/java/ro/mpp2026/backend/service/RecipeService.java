@@ -1,6 +1,9 @@
 package ro.mpp2026.backend.service;
 
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -32,6 +35,7 @@ public class RecipeService {
     private final AuditService auditService;
 
     @Transactional
+    @CacheEvict(value = "recipes_list", allEntries = true)
     public RecipeResponse createRecipe(RecipeRequest recipeRequest, String currentUsername) {
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username " + currentUsername));
@@ -70,6 +74,10 @@ public class RecipeService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "recipe_item", key = "#recipeId"),
+            @CacheEvict(value = "recipes_list", allEntries = true)
+    })
     public RecipeResponse uploadImage(final Long recipeId, final MultipartFile file, final String currentUsername) {
         final Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new IllegalArgumentException("Recipe not found with id " + recipeId));
@@ -95,6 +103,10 @@ public class RecipeService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "recipe_item", key = "#recipeId"),
+            @CacheEvict(value = "recipes_list", allEntries = true)
+    })
     public RecipeResponse updateRecipe(Long recipeId, RecipeRequest recipeRequest, String currentUsername) {
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username " + currentUsername));
@@ -141,6 +153,10 @@ public class RecipeService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "recipe_item", key = "#recipeId"),
+            @CacheEvict(value = "recipes_list", allEntries = true)
+    })
     public void deleteRecipe(Long recipeId, String currentUsername) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new IllegalArgumentException("Recipe not found with id " + recipeId));
@@ -168,6 +184,7 @@ public class RecipeService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "recipes_list")
     public List<RecipeResponse> getAllRecipes() {
         return recipeRepository.findAllWithIngredients()
                 .stream()
@@ -176,6 +193,7 @@ public class RecipeService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "recipe_item", key = "#id")
     public RecipeResponse getRecipeById(Long id) {
         Recipe recipe = recipeRepository.findByIdWithIngredients(id)
                 .orElseThrow( () -> new IllegalArgumentException("Recipe not found with id " + id));
