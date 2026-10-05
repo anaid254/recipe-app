@@ -24,6 +24,7 @@ public class RecipeResponse {
     private LocalDateTime createdAt;
     private Long authorId;
     private String authorUsername;
+    private String authorAvatarUrl;
 
     private List<RecipeIngredientResponse> ingredients;
 }

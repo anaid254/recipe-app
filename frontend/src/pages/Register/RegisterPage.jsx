@@ -3,6 +3,7 @@ import { FaCheck, FaTimes, FaInfoCircle, FaEye, FaEyeSlash } from 'react-icons/f
 import './Register.css';
 import axios from '../../api/axios.js';
 import {Link, useNavigate} from "react-router-dom";
+import Button from "../../components/Button/Button.jsx";
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{2,19}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{6,24}$/;
@@ -36,6 +37,8 @@ const RegisterPage = () => {
 
     const [showPwd, setShowPwd] = useState(false);
     const [showMatchPwd, setShowMatchPwd] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
 
     useEffect(() => {
         userRef.current.focus();
@@ -77,6 +80,8 @@ const RegisterPage = () => {
             setGlobalError("Invalid Entry");
             return;
         }
+
+        setIsLoading(true);
         try{
             const response = await axios.post(REGISTER_URL,
                 JSON.stringify({username: user,email: email,password: pwd}),
@@ -108,12 +113,14 @@ const RegisterPage = () => {
                 }
             }
             errRef.current?.focus();
+        } finally {
+            setIsLoading(false);
         }
     }
 
     return (
         <div className="auth-wrapper">
-            <section className="auth-card">
+            <div className="auth-card">
                 <div className="auth-logo-container">
                     <img src="/logo.png" alt="Yummish" className="auth-logo" />
                 </div>
@@ -272,9 +279,16 @@ const RegisterPage = () => {
                         </p>
                     </div>
 
-                        <button disabled={!validName || !validPwd || !validEmail || !validMatch}>
-                            Sign Up
-                        </button>
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        size="lg"
+                        fullWidth
+                        isLoading={isLoading}
+                        disabled={!validName || !validPwd || !validEmail || !validMatch}
+                    >
+                        Sign Up
+                    </Button>
                 </form>
                 <p className="signin-prompt">
                     Already registered?<br />
@@ -282,7 +296,7 @@ const RegisterPage = () => {
                         <Link to="/login">Sign In</Link>
                     </span>
                 </p>
-            </section>
+            </div>
         </div>
     )
 }

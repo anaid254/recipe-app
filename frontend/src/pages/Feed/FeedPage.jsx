@@ -7,48 +7,42 @@ import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthProvider.jsx";
 
 const RECIPES_URL = "/api/recipes";
+const FAVORITES_URL = "/api/favorites";
 
 const FeedPage = () => {
-    const {auth} = useContext(AuthContext);
     const navigate = useNavigate();
-
     const [recipes, setRecipes] = useState({});
+    const [favoriteIds, setFavoriteIds] = useState(new Set());
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         let isMounted = true;
 
-        const token = auth?.accessToken || localStorage.getItem("token");
-
-        if (!token) {
-            navigate("/login", { replace: true });
-            return;
-        }
-
-        const fetchRecipes = async () => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get(RECIPES_URL, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                const [recipesRes, favoritesRes] = await Promise.all([
+                    axios.get(RECIPES_URL),
+                    axios.get(FAVORITES_URL)
+                ]);
 
                 if (isMounted) {
-                    const data = Array.isArray(response.data)
-                        ? response.data
-                        : (response.data?.content || []);
+                    const recipesData = Array.isArray(recipesRes.data)
+                        ? recipesRes.data
+                        : (recipesRes.data?.content || []);
+                    setRecipes(recipesData);
 
-                    setRecipes(data);
+                    const favList = Array.isArray(favoritesRes.data) ? favoritesRes.data : [];
+                    const ids = new Set(favList.map(fav => fav.recipeId || fav.id));
+                    setFavoriteIds(ids);
                 }
             } catch (err) {
-                console.error("Eroare la fetchRecipes:", err);
+                console.error("Eroare la încărcare:", err);
                 if (isMounted) {
                     if (err.response?.status === 401 || err.response?.status === 403) {
-                        localStorage.removeItem("token");
                         navigate("/login", { replace: true });
                     } else {
-                        setErrMsg("Couldn't find any recipe");
+                        setError("Couldn't load data");
                     }
                 }
             } finally {
@@ -58,12 +52,45 @@ const FeedPage = () => {
             }
         };
 
-        fetchRecipes();
+        fetchData();
 
         return () => {
             isMounted = false;
         };
-    }, [auth?.accessToken, navigate]);
+    }, [navigate]);
+
+    const handleToggleFavorite = async (recipeId) => {
+        const isFav = favoriteIds.has(recipeId);
+
+        setFavoriteIds((prev) => {
+            const next = new Set(prev);
+            if (isFav) {
+                next.delete(recipeId);
+            } else {
+                next.add(recipeId);
+            }
+            return next;
+        });
+
+        try {
+            if (isFav) {
+                await axios.delete(`${FAVORITES_URL}/${recipeId}`);
+            } else {
+                await axios.post(`${FAVORITES_URL}/${recipeId}`);
+            }
+        } catch (err) {
+            console.error("Error at favorite:", err);
+            setFavoriteIds((prev) => {
+                const next = new Set(prev);
+                if (isFav) {
+                    next.add(recipeId);
+                } else {
+                    next.delete(recipeId);
+                }
+                return next;
+            });
+        }
+    };
 
     return (
         <div className="feed-wrapper">
@@ -81,7 +108,12 @@ const FeedPage = () => {
                     )}
 
                     {!isLoading && recipes.map((recipe) => (
-                        <PostCard key={recipe.id} recipe={recipe} />
+                        <PostCard
+                            key={recipe.id}
+                            recipe={recipe}
+                            isFavorite={favoriteIds.has(recipe.id)}
+                            onToggleFavorite={handleToggleFavorite}
+                        />
                     ))}
                 </main>
             </div>

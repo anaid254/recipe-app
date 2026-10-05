@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/recipes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class RecipeController {
 
     private final RecipeService recipeService;

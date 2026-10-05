@@ -30,7 +30,6 @@ public class RecipeRequest {
     @Positive(message = "Prep time must be a positive number")
     private Integer prepTimeMinutes;
 
-    @Positive(message = "Cooking time must be a positive number")
     private Integer cookTimeMinutes;
 
     @Positive(message = "Servings must be a positive number")

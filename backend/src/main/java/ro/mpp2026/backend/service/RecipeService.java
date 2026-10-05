@@ -249,6 +249,7 @@ public class RecipeService {
                 .createdAt(recipe.getCreatedAt())
                 .authorId(recipe.getUser().getId())
                 .authorUsername(recipe.getUser().getUsername())
+                .authorAvatarUrl(recipe.getUser().getProfilePictureUrl())
                 .ingredients(ingredientResponses)
                 .build();
     }

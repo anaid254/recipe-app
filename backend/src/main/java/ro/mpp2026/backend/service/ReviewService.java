@@ -162,6 +162,7 @@ public class ReviewService {
                 .updatedAt(review.getUpdatedAt())
                 .userId(review.getUser().getId())
                 .username(review.getUser().getUsername())
+                .userAvatarUrl(review.getUser().getProfilePictureUrl())
                 .recipeId(review.getRecipe().getId())
                 .build();
     }

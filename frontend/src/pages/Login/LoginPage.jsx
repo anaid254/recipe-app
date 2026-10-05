@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useContext} from "react";
 import AuthContext from "../../context/AuthProvider.jsx";
 import { Link, useNavigate } from 'react-router-dom';
 import '../Register/Register.css';
+import Button from "../../components/Button/Button.jsx";
 
 import axios from '../../api/axios.js';
 import {FaEye, FaEyeSlash} from "react-icons/fa";
@@ -17,6 +18,7 @@ const LoginPage = () => {
     const [pwd, setPwd] = useState('');
     const [errMsg, setErrMsg] = useState('');
     const [showPwd, setShowPwd] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
 
     useEffect(() => {
@@ -31,20 +33,18 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try{
-            const response = await axios.post(LOGIN_URL, JSON.stringify({ username: user, password: pwd }),
-                {
-                    headers: {'Content-Type': 'application/json'},
-                    withCredentials: true
-                });
-            console.log(JSON.stringify(response?.data));
-            const accessToken = response?.data?.token;
-            const role = response?.data?.role;
-            setAuth({ user, role, accessToken });
+        setIsLoading(true);
 
-            if (accessToken) {
-                localStorage.setItem('token', accessToken);
-            }
+        try{
+            const response = await axios.post(LOGIN_URL, {
+                username: user,
+                password: pwd
+            });
+            console.log(JSON.stringify(response?.data));
+            const role = response?.data?.role;
+            setAuth({ user, role});
+            localStorage.setItem('user', JSON.stringify({ user, role }));
+
             setUser('');
             setPwd('');
             navigate('/feed', { replace: true });
@@ -59,12 +59,14 @@ const LoginPage = () => {
                 setErrMsg('LoginPage Failed');
             }
             errRef.current.focus();
+        } finally {
+            setIsLoading(false);
         }
     }
 
     return (
         <div className="auth-wrapper">
-            <section className="auth-card">
+            <div className="auth-card">
                 <div className="auth-logo-container">
                     <img src="/logo.png" alt="Yummish" className="auth-logo" />
                 </div>
@@ -109,7 +111,16 @@ const LoginPage = () => {
                             </button>
                         </div>
                     </div>
-                    <button>Sign In</button>
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        size="lg"
+                        fullWidth
+                        isLoading={isLoading}
+                        disabled={!user || !pwd}
+                    >
+                        Sign In
+                    </Button>
                 </form>
                 <p className="signin-prompt">
                     Need an Account?<br />
@@ -117,7 +128,7 @@ const LoginPage = () => {
                         <Link to="/register">Sign Up</Link>
                     </span>
                 </p>
-            </section>
+            </div>
         </div>
     )
 }

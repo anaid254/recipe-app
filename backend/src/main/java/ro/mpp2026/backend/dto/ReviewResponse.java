@@ -16,6 +16,7 @@ public class ReviewResponse {
 
     private Long userId;
     private String username;
+    private String userAvatarUrl;
 
     private Long recipeId;
 }
