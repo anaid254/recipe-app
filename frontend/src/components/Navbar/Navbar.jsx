@@ -40,7 +40,7 @@ const Navbar = ({ searchTerm = '', setSearchTerm = () => {} }) => {
                         variant="primary"
                         size="sm"
                         icon={FaPlus}
-                        onClick={() => navigate('/create-recipe')}
+                        onClick={() => navigate('/create_recipe')}
                     >
                         <span className="btn-text">New Recipe</span>
                     </Button>
