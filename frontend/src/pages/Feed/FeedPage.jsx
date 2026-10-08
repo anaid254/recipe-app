@@ -1,17 +1,32 @@
-import {useEffect, useState, useContext} from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import PostCard from "../../components/PostCard/PostCard";
-import "./Feed.css";
 import Navbar from "../../components/Navbar/Navbar.jsx";
 import axios from "../../api/axios";
-import { useNavigate } from "react-router-dom";
-import AuthContext from "../../context/AuthProvider.jsx";
+import "./Feed.css";
 
 const RECIPES_URL = "/api/recipes";
 const FAVORITES_URL = "/api/favorites";
 
+const RECIPE_TYPES = [
+    { label: "All", value: "ALL" },
+    { label: "Breakfast", value: "BREAKFAST" },
+    { label: "Lunch", value: "LUNCH" },
+    { label: "Dinner", value: "DINNER" },
+    { label: "Soup", value: "SOUP" },
+    { label: "Salad", value: "SALAD" },
+    { label: "Dessert", value: "DESSERT" },
+    { label: "Snack", value: "SNACK" },
+    { label: "Beverage", value: "BEVERAGE" },
+];
+
 const FeedPage = () => {
     const navigate = useNavigate();
-    const [recipes, setRecipes] = useState({});
+    const [searchParams] = useSearchParams();
+    const searchQuery = searchParams.get("search") || "";
+
+    const [recipes, setRecipes] = useState([]);
+    const [selectedType, setSelectedType] = useState("ALL");
     const [favoriteIds, setFavoriteIds] = useState(new Set());
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -20,9 +35,22 @@ const FeedPage = () => {
         let isMounted = true;
 
         const fetchData = async () => {
+            setIsLoading(true);
+            setError(null);
             try {
+                let url = RECIPES_URL;
+                const params = {};
+
+                if (searchQuery.trim()) {
+                    url = `${RECIPES_URL}/search`;
+                    params.title = searchQuery.trim();
+                } else if (selectedType !== "ALL") {
+                    url = `${RECIPES_URL}/type`;
+                    params.recipeType = selectedType;
+                }
+
                 const [recipesRes, favoritesRes] = await Promise.all([
-                    axios.get(RECIPES_URL),
+                    axios.get(url, { params }),
                     axios.get(FAVORITES_URL)
                 ]);
 
@@ -33,7 +61,7 @@ const FeedPage = () => {
                     setRecipes(recipesData);
 
                     const favList = Array.isArray(favoritesRes.data) ? favoritesRes.data : [];
-                    const ids = new Set(favList.map(fav => fav.recipeId || fav.id));
+                    const ids = new Set(favList.map((fav) => fav.recipeId || fav.id));
                     setFavoriteIds(ids);
                 }
             } catch (err) {
@@ -42,7 +70,7 @@ const FeedPage = () => {
                     if (err.response?.status === 401 || err.response?.status === 403) {
                         navigate("/login", { replace: true });
                     } else {
-                        setError("Couldn't load data");
+                        setError("Couldn't load recipes");
                     }
                 }
             } finally {
@@ -57,7 +85,7 @@ const FeedPage = () => {
         return () => {
             isMounted = false;
         };
-    }, [navigate]);
+    }, [searchQuery, selectedType, navigate]);
 
     const handleToggleFavorite = async (recipeId) => {
         const isFav = favoriteIds.has(recipeId);
@@ -95,16 +123,49 @@ const FeedPage = () => {
     return (
         <div className="feed-wrapper">
             <Navbar />
+
             <div className="feed-container">
+                {!searchQuery && (
+                    <div className="category-scroll-container">
+                        <div className="category-pill-list">
+                            {RECIPE_TYPES.map((type) => (
+                                <button
+                                    key={type.value}
+                                    type="button"
+                                    className={`category-pill ${selectedType === type.value ? "active" : ""}`}
+                                    onClick={() => setSelectedType(type.value)}
+                                >
+                                    {type.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {searchQuery && (
+                    <div className="search-query-header">
+                        <h2>
+                            Results for "<span>{searchQuery}</span>"
+                        </h2>
+                        <button
+                            type="button"
+                            className="btn-clear-search"
+                            onClick={() => navigate("/feed")}
+                        >
+                            Show all recipes
+                        </button>
+                    </div>
+                )}
+
                 <main className="feed-grid">
-                    {isLoading && <p className="status-text">Loading recipes...</p>}
+                    {isLoading && <p className="status-text">Loading delicious recipes...</p>}
 
                     {!isLoading && error && (
                         <p className="status-text error">{error}</p>
                     )}
 
                     {!isLoading && !error && recipes.length === 0 && (
-                        <p className="status-text">No recipes found.</p>
+                        <p className="status-text">No recipes found for this selection.</p>
                     )}
 
                     {!isLoading && recipes.map((recipe) => (

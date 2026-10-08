@@ -4,11 +4,8 @@ public enum RecipeType {
     BREAKFAST,
     LUNCH,
     DINNER,
-    APPETIZER,
     SOUP,
-    MAIN_COURSE,
     SALAD,
-    SIDE_DISH,
     DESSERT,
     SNACK,
     BEVERAGE

@@ -1,10 +1,11 @@
-import "./Navbar.css"
+import "./Navbar.css";
 import { Link, useNavigate } from 'react-router-dom';
-import {FaSearch, FaPlus, FaUserCircle, FaSignOutAlt} from 'react-icons/fa';
+import { FaPlus, FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
 import axios from '../../api/axios.js';
 import Button from "../../components/Button/Button.jsx";
+import SearchBar from "../Search/SearchBar.jsx";
 
-const Navbar = ({ searchTerm = '', setSearchTerm = () => {} }) => {
+const Navbar = () => {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -26,13 +27,7 @@ const Navbar = ({ searchTerm = '', setSearchTerm = () => {} }) => {
                 </Link>
 
                 <div className="navbar-search-box">
-                    <FaSearch className="search-icon" />
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                    <SearchBar />
                 </div>
 
                 <div className="navbar-actions">
@@ -40,7 +35,7 @@ const Navbar = ({ searchTerm = '', setSearchTerm = () => {} }) => {
                         variant="primary"
                         size="sm"
                         icon={FaPlus}
-                        onClick={() => navigate('/create_recipe')}
+                        onClick={() => navigate('/create-recipe')}
                     >
                         <span className="btn-text">New Recipe</span>
                     </Button>
@@ -54,6 +49,7 @@ const Navbar = ({ searchTerm = '', setSearchTerm = () => {} }) => {
                     >
                         <span className="btn-text">Profile</span>
                     </Button>
+
                     <Button
                         variant="outline"
                         size="sm"
@@ -66,7 +62,7 @@ const Navbar = ({ searchTerm = '', setSearchTerm = () => {} }) => {
                 </div>
             </div>
         </header>
-    )
-}
+    );
+};
 
 export default Navbar;

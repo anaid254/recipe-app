@@ -14,9 +14,6 @@ const RECIPE_TYPES = [
     {label: "Salad", value: "SALAD"},
     {label: "Soup", value: "SOUP"},
     { label: "Snack", value: "SNACK" },
-    { label: "Appetizer", value: "APPETIZER" },
-    { label: "Main Course", value: "MAIN_COURSE" },
-    { label: "Side Dish", value: "SIDE_DISH" },
     { label: "Beverage", value: "BEVERAGE" },
 ];
 

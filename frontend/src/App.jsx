@@ -13,7 +13,8 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/feed" element={<FeedPage />} />
             <Route path="/recipe/:id" element={<RecipeDetailsPage />} />
-            <Route path="/create_recipe" element={<CreateRecipePage />} />
+            <Route path="/recipes/:id" element={<RecipeDetailsPage />} />
+            <Route path="/create-recipe" element={<CreateRecipePage />} />
             <Route path="/" element={<LoginPage />} />
         </Routes>
     </main>
